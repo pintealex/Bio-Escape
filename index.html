@@ -43,9 +43,12 @@
         }
 
         input {
-            width: 100%;
-            font-size: 1.2rem; /* Previne zoom-ul automat la tastare pe iPhone */
-        }
+        width: 100% !important;   /* Ocupă tot spațiul, dar nu mai mult */
+        box-sizing: border-box;    /* INCLUDE padding-ul și bordura în cei 100% */
+        margin: 10px 0 !important; /* Spațiu sus-jos, zero stânga-dreapta */
+        font-size: 1.1rem;
+        display: block;            /* Se asigură că stă pe rândul lui */
+    }
 
         #drop-map {
             height: 280px;    /* Ajustăm harta de drag-and-drop pentru ecrane mici */
@@ -56,12 +59,6 @@
             height: 28px;
             font-size: 0.65em;
         }
-       input {
-            width: 100% !important;   /* Ocupă tot spațiul disponibil */
-            box-sizing: border-box;    /* FORȚEAZĂ bara să rămână în interiorul chenarului */
-            margin: 10px 0;            /* Adaugă spațiu deasupra și dedesubt */
-            font-size: 1.1rem;
-        } 
     }
     </style>
 </head>
@@ -332,5 +329,6 @@
     </script>
 </body>
 </html>
+
 
 
