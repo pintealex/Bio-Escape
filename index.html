@@ -242,17 +242,32 @@ function changeVol(v) {
         }
 
         function saveScore() {
-            let scores = JSON.parse(localStorage.getItem('BioScores') || '[]');
-            scores.push({n: st.n, t: st.sec});
-            scores.sort((a,b) => a.t - b.t);
-            let table = document.getElementById('lTable');
-            while(table.rows.length > 1) table.deleteRow(1);
-            scores.slice(0, 5).forEach((s, i) => {
-                let r = table.insertRow();
-                r.innerHTML = `<td>${i+1}</td><td>${s.n}</td><td>${s.t}</td>`;
-            });
-            localStorage.setItem('BioScores', JSON.stringify(scores));
-        }
+    // 1. Salvare locală (ca elevul să-și vadă scorul pe telefonul lui)
+    let scores = JSON.parse(localStorage.getItem('BioScores') || '[]');
+    scores.push({n: st.n, t: st.sec});
+    scores.sort((a,b) => a.t - b.t);
+    
+    let table = document.getElementById('lTable');
+    while(table.rows.length > 1) table.deleteRow(1);
+    scores.slice(0, 5).forEach((s, i) => {
+        let r = table.insertRow();
+        r.innerHTML = `<td>${i+1}</td><td>${s.n}</td><td>${s.t}</td>`;
+    });
+    localStorage.setItem('BioScores', JSON.stringify(scores));
+
+    // 2. TRIMITERE GLOBALĂ CĂTRE GOOGLE SHEETS
+    // AICI pui link-ul pe care l-ai copiat de la Deploy (cel cu /exec)
+    const url = "https://script.google.com/macros/s/AKfycbwIjibt6k3iRKAExFYYN1AENqncg1VJvJZrGPHY-dKEV8wdWWAtzoZz_6YivbxUf4Do/exec"; 
+
+    fetch(url, {
+        method: "POST",
+        mode: "no-cors", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nume: st.n, timp: st.sec })
+    }).then(() => {
+        console.log("Scor trimis în tabelul Google!");
+    }).catch(err => console.log("Eroare la trimitere globală:", err));
+}
 
         window.addEventListener('keypress', (e) => {
             if(e.key === 'Enter') {
@@ -278,4 +293,5 @@ function changeVol(v) {
     </script>
 </body>
 </html>
+
 
