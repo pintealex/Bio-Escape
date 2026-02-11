@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>BIO-ESCAPE: ACADEMY EDITION</title>
+    <style>
+        :root { --neon: #00ff88; --cyber: #00d4ff; --dark: #050a14; --glass: rgba(15, 23, 42, 0.98); }
+        body { margin: 0; background: var(--dark); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        #dna-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.2; pointer-events: none; }
+        #ui-container { width: 95%; max-width: 950px; background: var(--glass); border: 2px solid var(--neon); border-radius: 30px; padding: 30px; box-shadow: 0 0 50px rgba(0, 255, 136, 0.2); position: relative; text-align: center; }
+        .screen { display: none; animation: fadeIn 0.4s ease; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .bio-display { width: 100%; height: 220px; border-radius: 15px; margin: 15px 0; border: 1px solid var(--cyber); background-size: cover; background-position: center; background-color: #111; }
+        #drag-zone { display: flex; justify-content: center; gap: 8px; margin: 10px 0; min-height: 40px; flex-wrap: wrap; }
+        .drag-item { background: var(--cyber); color: #000; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: grab; font-size: 0.9em; border: 1px solid #fff; }
+        #drop-map { position: relative; width: 100%; height: 350px; background-size: contain; background-repeat: no-repeat; background-position: center; border: 1px dashed var(--neon); background-color: rgba(255,255,255,0.02); margin: 0 auto; }
+        .drop-box { position: absolute; width: 110px; height: 35px; border: 1px solid #fff; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.75em; border-radius: 4px; font-weight: bold; color: transparent; z-index: 10; }
+        input { width: 60%; padding: 12px; background: #000; border: 2px solid var(--cyber); border-radius: 8px; color: #fff; font-size: 1.1em; text-align: center; outline: none; margin: 10px 0; }
+        button { padding: 12px 25px; background: linear-gradient(135deg, var(--neon), var(--cyber)); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin: 5px; transition: 0.2s; color: #000; }
+        button:hover { transform: scale(1.05); filter: brightness(1.2); }
+        #timer-ui { position: absolute; top: 20px; left: 30px; color: var(--cyber); font-family: monospace; font-size: 1.4em; }
+        .progress-bar { width: 100%; height: 5px; background: #222; margin-top: 10px; border-radius: 5px; }
+        #progress-fill { height: 100%; background: var(--neon); width: 0%; transition: 0.3s; }
+    </style>
+</head>
+<body>
+    <canvas id="dna-bg"></canvas>
+    <div id="ui-container">
+        <div id="timer-ui" class="hidden">00:00</div>
+
+        <div id="scr-1" class="screen active">
+            <h1 style="color: var(--neon);">🧬 BIO-ESCAPE: ACADEMY</h1>
+            <div class="bio-display" style="background-image: url('microscop.jpg/800px-Compound_Microscope_Structure.jpg');"></div>
+            <input type="text" id="nick" placeholder="Nume explorator..." autocomplete="off">
+            <br><button onclick="start()">ACCESEAZĂ SISTEMUL 🔊</button>
+        </div>
+
+        <div id="scr-2" class="screen">
+            <h2>Selectează Nivelul de Studiu:</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                <button onclick="pick('V')">CLASA V</button><button onclick="pick('VI')">CLASA VI</button>
+                <button onclick="pick('VII')">CLASA VII</button><button onclick="pick('VIII')">CLASA VIII</button>
+            </div>
+        </div>
+
+        <div id="scr-3" class="screen">
+            <h3 id="sec-title" style="color: var(--cyber);">SECȚIUNE</h3>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            <div id="q-img" class="bio-display"></div>
+            <p id="q-txt" style="font-size: 1.2em;"></p>
+            <input type="text" id="q-ans" placeholder="Răspuns..." autocomplete="off">
+            <br><button id="btn-check-q" onclick="checkQ()">VERIFICĂ DATELE</button>
+        </div>
+
+        <div id="scr-4" class="screen">
+            <h3 id="drag-title" style="color: var(--neon);">IDENTIFICARE VIZUALĂ</h3>
+            <div id="drag-zone"></div>
+            <div id="drop-map"></div>
+            <button onclick="checkD()">FINALIZEAZĂ SECȚIUNEA</button>
+        </div>
+
+        <div id="scr-5" class="screen">
+            <h1 style="color: var(--neon);">CIFRĂ DEBLOCATĂ</h1>
+            <div style="font-size: 6em; color: #ffcc00; font-weight: 900;" id="d-val">0</div>
+            <p>Notează cifra și continuă spre următoarea secțiune.</p>
+            <button id="btn-next" onclick="nextFlow()">AVANSEAZĂ (Enter)</button>
+        </div>
+
+        <div id="scr-6" class="screen">
+            <h1>🔐 LACĂTUL SECTORULUI</h1>
+            <p>Introdu codul format din cele 4 cifre colectate:</p>
+            <input type="number" id="l-in" placeholder="****" style="letter-spacing:15px; font-size: 2em; width: 220px;" autocomplete="off">
+            <button onclick="unlock()">EVADEAZĂ</button>
+        </div>
+
+        <div id="scr-7" class="screen">
+            <h1 style="color: #ffcc00;">🏆 NIVEL COMPLETAT!</h1>
+            <p id="w-time" style="font-size: 1.5em;"></p>
+            <table id="lTable" style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                <tr><th>Loc</th><th>Nume</th><th>Sec</th></tr>
+            </table>
+            <button onclick="location.reload()" style="margin-top: 20px;">ALT NIVEL</button>
+        </div>
+    </div>
+
+    <audio id="bg-sound" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg"></audio>
+
+    <script>
+        let st = { n: "", c: "", sIdx: 0, qI: 0, code: "", sec: 0, t: null };
+        const aud = document.getElementById('bg-sound');
+
+       const db = {
+            'V': [
+                { 
+                    t: "SECȚIUNEA 1: LABORATORUL", 
+                    qs: [
+                        { q: "Instrumentul care mărește imaginea celulelor:", a: ["microscop"], img: "imagini/microscop.jpg" },
+                        { q: "Biotop + Biocenoză =", a: ["ecosistem"], img: "imagini/ecosistem.jpg" },
+                        { q: "Factor fără viață (apă, aer):", a: ["biotop"], img: "imagini/biotop.jpg" }
+                    ], 
+                    drag: { d: "2", img: "imagini/planta.jpg", items: [{id:'r', n:'Radacina', x:45, y:85}, {id:'t', n:'Tulpina', x:45, y:70}, {id:'f', n:'Frunze', x:45, y:40}] } 
+                },
+                { 
+                    t: "SECȚIUNEA 2: CELULA SI TESUTURILE", 
+                    qs: [
+                        { q: "Instrumentul care mărește imaginea celulelor:", a: ["microscop"], img: "imagini/microscop.jpg" },
+                        { q: "Biotop + Biocenoză =", a: ["ecosistem"], img: "imagini/ecosistem.jpg" },
+                        { q: "Factor fără viață (apă, aer):", a: ["biotop"], img: "imagini/biotop.jpg" }
+                    ], 
+                    drag: { d: "7", img: "imagini/planta.jpg", items: [{id:'r', n:'Radacina', x:45, y:85}, {id:'t', n:'Tulpina', x:45, y:70}, {id:'f', n:'Frunze', x:45, y:40}] } 
+                }
+            ],
+            'VI': [
+                { 
+                    t: "SECȚIUNEA 1: NUTRIȚIA", 
+                    qs: [
+                        {q: "Unitatea structurală a vieții:", a: ["celula"], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Cell_animal_eukaryotic.png/800px-Cell_animal_eukaryotic.png"},
+                        {q: "Procesul de preparare a hranei prin lumină:", a: ["fotosinteza"], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Photosynthesis_en.svg/800px-Photosynthesis_en.svg"},
+                        {q: "Din ce organ se extrage clorofila?", a: ["frunza"], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Leaf_anatomy.svg/800px-Leaf_anatomy.svg.png"}
+                    ], 
+                    drag: { d: "1", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Diagram_of_the_human_heart_%28cropped%29.svg/400px-Diagram_of_the_human_heart_%28cropped%29.svg.png", items: [{id:'a', n:'Aorta', x:45, y:15}, {id:'v', n:'Ventricul', x:60, y:70}] } 
+                }
+            ],
+            'VII': [
+                { 
+                    t: "SECȚIUNEA 1: EXCREȚIA", 
+                    qs: [
+                        {q: "Unitatea structurală a rinichiului:", a: ["nefron"], img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Kidney_Section.jpg/800px-Kidney_Section.jpg"}
+                    ], 
+                    drag: { d: "4", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Diagram_of_the_human_heart_%28cropped%29.svg/400px-Diagram_of_the_human_heart_%28cropped%29.svg.png", items: [{id:'a', n:'Aorta', x:45, y:15}] } 
+                }
+            ],
+            'VIII': []
+        };
+
+
+
+        function start() {
+            st.n = document.getElementById('nick').value || "Elev";
+            aud.play(); aud.volume = 0.2;
+            showS('scr-2');
+            if(!st.t) st.t = setInterval(() => { st.sec++; updateT(); }, 1000);
+            document.getElementById('timer-ui').classList.remove('hidden');
+        }
+
+        function pick(clasa) {
+            st.c = clasa; st.sIdx = 0; st.qI = 0; st.code = "";
+            loadQ();
+            showS('scr-3');
+        }
+
+        function loadQ() {
+            let data = db[st.c][st.sIdx];
+            document.getElementById('sec-title').innerText = data.t;
+            document.getElementById('q-img').style.backgroundImage = `url('${data.qs[st.qI].img}')`;
+            document.getElementById('q-txt').innerText = data.qs[st.qI].q;
+            document.getElementById('q-ans').value = "";
+            document.getElementById('q-ans').focus();
+            document.getElementById('progress-fill').style.width = ((st.qI / 3) * 100) + "%";
+        }
+
+        function checkQ() {
+            let ans = document.getElementById('q-ans').value.toLowerCase().trim();
+            if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
+                st.qI++;
+                if(st.qI < 3) {
+                    loadQ();
+                } else {
+                    setupD();
+                }
+            } else {
+                alert("Răspuns incorect! Încearcă din nou.");
+            }
+        }
+
+        function setupD() {
+            let d = db[st.c][st.sIdx].drag;
+            let zone = document.getElementById('drag-zone');
+            let map = document.getElementById('drop-map');
+            zone.innerHTML = ""; map.innerHTML = "";
+            map.style.backgroundImage = `url('${d.img}')`;
+            
+            d.items.forEach(item => {
+                let el = document.createElement('div');
+                el.className = "drag-item"; el.innerText = item.n; el.draggable = true;
+                el.id = "dr-" + item.id;
+                el.ondragstart = (e) => e.dataTransfer.setData("text", e.target.id);
+                zone.appendChild(el);
+
+                let box = document.createElement('div');
+                box.className = "drop-box"; box.style.left = item.x + "%"; box.style.top = item.y + "%";
+                box.ondragover = (e) => e.preventDefault();
+                box.ondrop = (e) => {
+                    e.preventDefault();
+                    let id = e.dataTransfer.getData("text");
+                    if(id === "dr-" + item.id) {
+                        e.target.innerText = item.n;
+                        e.target.style.background = "rgba(0,255,136,0.8)";
+                        e.target.style.color = "#000";
+                        document.getElementById(id).style.visibility = "hidden";
+                    }
+                };
+                map.appendChild(box);
+            });
+            showS('scr-4');
+        }
+
+        function checkD() {
+            let boxes = document.querySelectorAll('.drop-box');
+            if(Array.from(boxes).every(b => b.innerText !== "")) {
+                let valCifra = db[st.c][st.sIdx].drag.d;
+                st.code += valCifra;
+                document.getElementById('d-val').innerText = valCifra;
+                showS('scr-5');
+            } else {
+                alert("Identifică toate elementele de pe diagramă!");
+            }
+        }
+
+       function nextFlow() {
+    st.sIdx++; 
+    st.qI = 0;
+    
+    // Verifică dacă în clasa curentă (st.c) există secțiunea cu numărul st.sIdx
+    if(db[st.c] && db[st.c][st.sIdx]) { 
+        loadQ();
+        showS('scr-3');
+    } else {
+        showS('scr-6');
+    }
+}
+
+        function unlock() {
+            if(document.getElementById('l-in').value === st.code) {
+                clearInterval(st.t);
+                document.getElementById('w-time').innerText = `Timp final: ${st.sec} secunde`;
+                saveScore();
+                showS('scr-7');
+            } else {
+                alert("Cod incorect! Verifică cifrele colectate.");
+            }
+        }
+
+        function showS(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function updateT() {
+            let m = Math.floor(st.sec / 60).toString().padStart(2, '0');
+            let s = (st.sec % 60).toString().padStart(2, '0');
+            document.getElementById('timer-ui').innerText = m + ":" + s;
+        }
+
+        function saveScore() {
+            let scores = JSON.parse(localStorage.getItem('BioScores') || '[]');
+            scores.push({n: st.n, t: st.sec});
+            scores.sort((a,b) => a.t - b.t);
+            let table = document.getElementById('lTable');
+            while(table.rows.length > 1) table.deleteRow(1);
+            scores.slice(0, 5).forEach((s, i) => {
+                let r = table.insertRow();
+                r.innerHTML = `<td>${i+1}</td><td>${s.n}</td><td>${s.t}</td>`;
+            });
+            localStorage.setItem('BioScores', JSON.stringify(scores));
+        }
+
+        window.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                const activeScr = document.querySelector('.screen.active').id;
+                if(activeScr === 'scr-1') start();
+                else if(activeScr === 'scr-3') checkQ();
+                else if(activeScr === 'scr-5') nextFlow();
+                else if(activeScr === 'scr-6') unlock();
+            }
+        });
+
+        // Fundal ADN
+        const canvas = document.getElementById('dna-bg'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height); let t = Date.now()*0.001; ctx.strokeStyle = '#00ff88';
+            for(let i=0; i<canvas.width; i+=50) {
+                let y1 = Math.sin(t + i*0.01)*50 + canvas.height/2, y2 = Math.sin(t + i*0.01 + Math.PI)*50 + canvas.height/2;
+                ctx.beginPath(); ctx.moveTo(i, y1); ctx.lineTo(i, y2); ctx.stroke();
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
