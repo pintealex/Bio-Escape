@@ -257,13 +257,17 @@ function changeVol(v) {
 
     // 2. TRIMITERE GLOBALĂ CĂTRE GOOGLE SHEETS
     // AICI pui link-ul pe care l-ai copiat de la Deploy (cel cu /exec)
-    const url = "https://script.google.com/macros/s/AKfycbznqG0RUf4Rm5xBHlPmSr5fPhqZl6-rLbgMrLpD584acD4mzjtjOv1T000RR0lFmr23/exec"; 
+    const url = "https://script.google.com/macros/s/AKfycby09LLshdSfgd8VHW-KXzaEvD2JLN6WyEzcdGMwpDQ6Zbw3ACR4zVkaNVJKkOeWX0Y/exec"; 
 
     fetch(url, {
         method: "POST",
         mode: "no-cors", 
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nume: st.n, timp: st.sec })
+        body: JSON.stringify({ 
+            nume: st.n, 
+            timp: st.sec, 
+            clasa: st.c // <--- Aceasta este linia nouă care trimite clasa selectată
+        })
     }).then(() => {
         console.log("Scor trimis în tabelul Google!");
     }).catch(err => console.log("Eroare la trimitere globală:", err));
@@ -293,6 +297,7 @@ function changeVol(v) {
     </script>
 </body>
 </html>
+
 
 
 
