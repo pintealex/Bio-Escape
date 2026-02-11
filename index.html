@@ -21,18 +21,20 @@
     position: absolute; 
     width: 110px; 
     height: 35px; 
-    border: 2px dashed var(--cyber); /* Chenar punctat colorat */
-    background: rgba(0, 212, 255, 0.15); /* Fundal albastru discret */
+    /* Schimbăm din dashed în solid pentru vizibilitate maximă */
+    border: 2px solid var(--neon); 
+    /* Punem un fundal mai închis ca să se vadă peste albul pozei */
+    background: rgba(5, 10, 20, 0.8); 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    font-size: 0.8em; 
-    border-radius: 8px; 
+    font-size: 0.75em; 
+    border-radius: 6px; 
     font-weight: bold; 
-    color: rgba(255,255,255,0.5); /* Text discret "Pune aici" */
+    /* Textul care apare înainte de drop să fie alb/gri, nu transparent */
+    color: #ffffff; 
     z-index: 10; 
-    transition: all 0.3s ease; /* Animație fină pentru interacțiune */
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); /* Efect de strălucire */
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
 }
         input { width: 60%; padding: 12px; background: #000; border: 2px solid var(--cyber); border-radius: 8px; color: #fff; font-size: 1.1em; text-align: center; outline: none; margin: 10px 0; }
         button { padding: 12px 25px; background: linear-gradient(135deg, var(--neon), var(--cyber)); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin: 5px; transition: 0.2s; color: #000; }
@@ -346,6 +348,7 @@
     </script>
 </body>
 </html>
+
 
 
 
