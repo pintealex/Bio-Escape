@@ -295,22 +295,31 @@
 }
 
        function unlock() {
-            if(document.getElementById('l-in').value === st.code) {
-                // EFECT SCÂNTEIE VERDE
-                document.body.style.transition = "0.3s";
-                document.body.style.background = "var(--neon)";
-                setTimeout(() => { document.body.style.background = "var(--dark)"; }, 300);
+    let inputVal = document.getElementById('l-in').value.toString().trim();
+    let correctCode = st.code.toString().trim();
 
-                clearInterval(st.t);
-                document.getElementById('w-time').innerText = `Timp final: ${st.sec} secunde`;
-                saveScore();
-                showS('scr-7');
-            } else {
-                // REDARE SUNET EROARE ȘI AICI DACĂ VREI
-                document.getElementById('err-sound').play();
-                alert("Cod incorect! Verifică cifrele colectate.");
-            }
-        }
+    if(inputVal === correctCode && correctCode !== "") {
+        // EFECT VIZUAL SUCCES
+        document.body.style.transition = "0.3s";
+        document.body.style.background = "var(--neon)";
+        setTimeout(() => { document.body.style.background = "var(--dark)"; }, 300);
+
+        clearInterval(st.t);
+        document.getElementById('w-time').innerText = `Timp final: ${st.sec} secunde`;
+        saveScore();
+        showS('scr-7');
+    } else {
+        // SUNET EROARE
+        document.getElementById('err-sound').currentTime = 0;
+        document.getElementById('err-sound').play();
+        
+        // EFECT VIZUAL EROARE (ROȘU)
+        document.body.style.background = "#ff4444";
+        setTimeout(() => { document.body.style.background = "var(--dark)"; }, 200);
+        
+        alert("Cod incorect! Ai introdus " + inputVal + ", dar codul colectat are " + correctCode.length + " cifre.");
+    }
+}
 
         function showS(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -361,6 +370,7 @@
     </script>
 </body>
 </html>
+
 
 
 
