@@ -37,6 +37,11 @@
 </head>
 <body>
     <canvas id="dna-bg"></canvas>
+    <div id="volume-ctrl" style="position: fixed; bottom: 10px; right: 10px; z-index: 100; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
+    <span>🔈</span>
+    <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.2" style="width: 80px;" oninput="changeVol(this.value)">
+    <span>🔊</span>
+    </div>
     <div id="ui-container">
         <div id="timer-ui" class="hidden">00:00</div>
         <div id="scr-1" class="screen active">
@@ -144,15 +149,21 @@
         }
 
         function checkQ() {
-            let ans = document.getElementById('q-ans').value.toLowerCase().trim();
-            if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
-                st.qI++;
-                if(st.qI < db[st.c][st.sIdx].qs.length) loadQ();
-                else setupD();
-            } else {
-                alert("Răspuns incorect! Încearcă din nou.");
-            }
-        }
+    let ans = document.getElementById('q-ans').value.toLowerCase().trim();
+    if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
+        st.qI++;
+        if(st.qI < db[st.c][st.sIdx].qs.length) loadQ();
+        else setupD();
+    } else {
+        // PENALIZARE 10 SECUNDE
+        st.sec += 10;
+        updateT(); // Actualizăm ceasul imediat ca să se vadă schimbarea
+        
+        document.body.style.background = "#ff4444";
+        setTimeout(() => { document.body.style.background = "var(--dark)"; }, 200);
+        alert("Greșit! +10 secunde penalizare.");
+    }
+}
 
         function setupD() {
             let d = db[st.c][st.sIdx].drag;
@@ -201,14 +212,24 @@
         }
 
         function unlock() {
-            if(document.getElementById('l-in').value.toString() === st.code.toString()) {
-                clearInterval(st.t);
-                document.getElementById('w-time').innerText = `Timp final: ${st.sec} secunde`;
-                saveScore();
-                showS('scr-7');
-            } else alert("Cod incorect!");
-        }
-
+    if(document.getElementById('l-in').value.toString() === st.code.toString()) {
+        clearInterval(st.t);
+        document.getElementById('w-time').innerText = `Timp final: ${st.sec} secunde`;
+        saveScore();
+        showS('scr-7');
+    } else {
+        // PENALIZARE 10 SECUNDE
+        st.sec += 10;
+        updateT();
+        
+        document.body.style.background = "#ff4444";
+        setTimeout(() => { document.body.style.background = "var(--dark)"; }, 200);
+        alert("Cod incorect! +10 secunde penalizare.");
+    }
+}
+function changeVol(v) {
+    aud.volume = v;
+}
         function showS(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -257,3 +278,4 @@
     </script>
 </body>
 </html>
+
