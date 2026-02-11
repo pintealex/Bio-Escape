@@ -142,7 +142,8 @@
     </div>
 
     <audio id="bg-sound" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg"></audio>
-
+    <audio id="err-sound"><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+    
     <script>
         let st = { n: "", c: "", sIdx: 0, qI: 0, code: "", sec: 0, t: null };
         const aud = document.getElementById('bg-sound');
@@ -227,6 +228,8 @@
                     setupD();
                 }
             } else {
+                // REDARE SUNET EROARE
+                document.getElementById('err-sound').play();
                 alert("Răspuns incorect! Încearcă din nou.");
             }
         }
@@ -288,13 +291,20 @@
     }
 }
 
-        function unlock() {
+       function unlock() {
             if(document.getElementById('l-in').value === st.code) {
+                // EFECT SCÂNTEIE VERDE
+                document.body.style.transition = "0.3s";
+                document.body.style.background = "var(--neon)";
+                setTimeout(() => { document.body.style.background = "var(--dark)"; }, 300);
+
                 clearInterval(st.t);
                 document.getElementById('w-time').innerText = `Timp final: ${st.sec} secunde`;
                 saveScore();
                 showS('scr-7');
             } else {
+                // REDARE SUNET EROARE ȘI AICI DACĂ VREI
+                document.getElementById('err-sound').play();
                 alert("Cod incorect! Verifică cifrele colectate.");
             }
         }
@@ -348,6 +358,7 @@
     </script>
 </body>
 </html>
+
 
 
 
