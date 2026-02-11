@@ -142,7 +142,7 @@
     </div>
 
     <audio id="bg-sound" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg"></audio>
-    <audio id="err-sound"><source src="https://www.myinstants.com/media/sounds/wrong-answer-126515.mp3" type="audio/mpeg"></audio>
+    <audio id="err-sound"><source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg"></audio>
     
     <script>
         let st = { n: "", c: "", sIdx: 0, qI: 0, code: "", sec: 0, t: null };
@@ -255,24 +255,22 @@
             
             if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
                 st.qI++;
-                if(st.qI < 3) {
-                    loadQ(); // Trece la următoarea întrebare din secțiune
+                // Verificăm dacă mai sunt întrebări în această secțiune
+                if(st.qI < db[st.c][st.sIdx].qs.length) {
+                    loadQ(); 
                 } else {
-                    // DACĂ S-AU TERMINAT CELE 3 ÎNTREBĂRI, TRECEM LA DIAGRAMĂ
+                    // DACĂ S-AU TERMINAT ÎNTREBĂRILE, TRECEM LA DIAGRAMĂ
                     setupD(); 
                 }
             } else {
-                // REPARARE SUNET EROARE
+                // SUNET EROARE SCURT
                 const errorAudio = document.getElementById('err-sound');
                 if(errorAudio) {
-                    errorAudio.pause();      // Îl oprim dacă rula deja
-                    errorAudio.currentTime = 0; // Îl resetăm la secunda 0
-                    errorAudio.load();       // Îl forțăm să se reîncarce
-                    
-                    // Încercăm să-l pornim și prindem eroarea dacă browserul îl blochează
-                    errorAudio.play().catch(e => console.log("Sunetul a fost blocat de browser"));
+                    errorAudio.currentTime = 0; 
+                    errorAudio.play().catch(e => console.log("Audio block"));
                 }
                 
+                // EFECT VIZUAL ROȘU
                 document.body.style.background = "#ff4444";
                 setTimeout(() => { 
                     document.body.style.background = "var(--dark)"; 
@@ -371,6 +369,7 @@
     </script>
 </body>
 </html>
+
 
 
 
