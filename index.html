@@ -250,7 +250,7 @@
             showS('scr-4');
         }
 
-        function checkQ() {
+       function checkQ() {
             let ans = document.getElementById('q-ans').value.toLowerCase().trim();
             if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
                 st.qI++;
@@ -260,14 +260,17 @@
                     setupD();
                 }
             } else {
-                // Resetăm sunetul la început și îl pornim
+                // Dacă răspunsul e greșit: Sunet + Efect Roșu + Alertă
                 const errorAudio = document.getElementById('err-sound');
-                errorAudio.currentTime = 0; 
-                errorAudio.play();
+                if(errorAudio) {
+                    errorAudio.currentTime = 0; 
+                    errorAudio.play();
+                }
                 
-                // EFECT VIZUAL EROARE (ROȘU) - opțional, dacă vrei să pulseze și aici
                 document.body.style.background = "#ff4444";
-                setTimeout(() => { document.body.style.background = "var(--dark)"; }, 200);
+                setTimeout(() => { 
+                    document.body.style.background = "var(--dark)"; 
+                }, 200);
 
                 alert("Răspuns incorect! Încearcă din nou.");
             }
@@ -362,6 +365,7 @@
     </script>
 </body>
 </html>
+
 
 
 
