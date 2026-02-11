@@ -252,19 +252,25 @@
 
        function checkQ() {
             let ans = document.getElementById('q-ans').value.toLowerCase().trim();
+            
             if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
                 st.qI++;
                 if(st.qI < 3) {
-                    loadQ();
+                    loadQ(); // Trece la următoarea întrebare din secțiune
                 } else {
-                    setupD();
+                    // DACĂ S-AU TERMINAT CELE 3 ÎNTREBĂRI, TRECEM LA DIAGRAMĂ
+                    setupD(); 
                 }
             } else {
-                // Dacă răspunsul e greșit: Sunet + Efect Roșu + Alertă
+                // REPARARE SUNET EROARE
                 const errorAudio = document.getElementById('err-sound');
                 if(errorAudio) {
-                    errorAudio.currentTime = 0; 
-                    errorAudio.play();
+                    errorAudio.pause();      // Îl oprim dacă rula deja
+                    errorAudio.currentTime = 0; // Îl resetăm la secunda 0
+                    errorAudio.load();       // Îl forțăm să se reîncarce
+                    
+                    // Încercăm să-l pornim și prindem eroarea dacă browserul îl blochează
+                    errorAudio.play().catch(e => console.log("Sunetul a fost blocat de browser"));
                 }
                 
                 document.body.style.background = "#ff4444";
@@ -365,6 +371,7 @@
     </script>
 </body>
 </html>
+
 
 
 
