@@ -107,7 +107,7 @@
             <div id="q-img" class="bio-display"></div>
             <p id="q-txt" style="font-size: 1.2em;"></p>
             <input type="text" id="q-ans" placeholder="Răspuns..." autocomplete="off">
-            <br><button id="btn-check-q" onclick="checkQ()">VERIFICĂ DATELE</button>
+            <br><button id="btn-check-q" onclick="()">VERIFICĂ DATELE</button>
         </div>
 
         <div id="scr-4" class="screen">
@@ -215,7 +215,8 @@
             document.getElementById('q-txt').innerText = data.qs[st.qI].q;
             document.getElementById('q-ans').value = "";
             document.getElementById('q-ans').focus();
-            document.getElementById('progress-fill').style.width = ((st.qI / 3) * 100) + "%";
+            // Progres calculat dinamic în funcție de numărul total de întrebări al secțiunii
+            document.getElementById('progress-fill').style.width = ((st.qI / data.qs.length) * 100) + "%";
         }
 
         function setupD() {
@@ -252,30 +253,25 @@
 
        function checkQ() {
             let ans = document.getElementById('q-ans').value.toLowerCase().trim();
+            let currentQuestions = db[st.c][st.sIdx].qs;
             
-            if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
+            if(currentQuestions[st.qI].a.includes(ans)) {
                 st.qI++;
-                // Verificăm dacă mai sunt întrebări în această secțiune
-                if(st.qI < db[st.c][st.sIdx].qs.length) {
+                // Verificăm dacă mai sunt întrebări în ACEASTA secțiune
+                if(st.qI < currentQuestions.length) {
                     loadQ(); 
                 } else {
-                    // ACEASTA ESTE LINIA CARE LIPSEA:
-                    // Când termină cele 3 întrebări, trecem la diagrama de drag-and-drop
+                    // Dacă s-au terminat întrebările, trecem la proba vizuală
                     setupD(); 
                 }
             } else {
-                // Dacă răspunsul e greșit: Sunet + Efect Roșu + Alertă
                 const errorAudio = document.getElementById('err-sound');
                 if(errorAudio) {
                     errorAudio.currentTime = 0; 
                     errorAudio.play().catch(e => console.log("Audio block"));
                 }
-                
                 document.body.style.background = "#ff4444";
-                setTimeout(() => { 
-                    document.body.style.background = "var(--dark)"; 
-                }, 200);
-
+                setTimeout(() => { document.body.style.background = "var(--dark)"; }, 200);
                 alert("Răspuns incorect! Încearcă din nou.");
             }
         }
@@ -369,6 +365,7 @@
     </script>
 </body>
 </html>
+
 
 
 
