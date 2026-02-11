@@ -259,18 +259,18 @@
                 if(st.qI < db[st.c][st.sIdx].qs.length) {
                     loadQ(); 
                 } else {
-                    // DACĂ S-AU TERMINAT ÎNTREBĂRILE, TRECEM LA DIAGRAMĂ
+                    // ACEASTA ESTE LINIA CARE LIPSEA:
+                    // Când termină cele 3 întrebări, trecem la diagrama de drag-and-drop
                     setupD(); 
                 }
             } else {
-                // SUNET EROARE SCURT
+                // Dacă răspunsul e greșit: Sunet + Efect Roșu + Alertă
                 const errorAudio = document.getElementById('err-sound');
                 if(errorAudio) {
                     errorAudio.currentTime = 0; 
                     errorAudio.play().catch(e => console.log("Audio block"));
                 }
                 
-                // EFECT VIZUAL ROȘU
                 document.body.style.background = "#ff4444";
                 setTimeout(() => { 
                     document.body.style.background = "var(--dark)"; 
@@ -369,6 +369,7 @@
     </script>
 </body>
 </html>
+
 
 
 
