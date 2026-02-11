@@ -218,25 +218,6 @@
             document.getElementById('progress-fill').style.width = ((st.qI / 3) * 100) + "%";
         }
 
-        function checkQ() {
-            let ans = document.getElementById('q-ans').value.toLowerCase().trim();
-            if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
-                st.qI++;
-                if(st.qI < 3) {
-                    loadQ();
-                } else {
-                    setupD();
-                }
-            } } else {
-    // Resetăm sunetul la început (în caz că e apăsat repede) și îl pornim
-    const errorAudio = document.getElementById('err-sound');
-    errorAudio.currentTime = 0; 
-    errorAudio.play();
-    
-    alert("Răspuns incorect! Încearcă din nou.");
-}
-        }
-
         function setupD() {
             let d = db[st.c][st.sIdx].drag;
             let zone = document.getElementById('drag-zone');
@@ -269,15 +250,26 @@
             showS('scr-4');
         }
 
-        function checkD() {
-            let boxes = document.querySelectorAll('.drop-box');
-            if(Array.from(boxes).every(b => b.innerText !== "")) {
-                let valCifra = db[st.c][st.sIdx].drag.d;
-                st.code += valCifra;
-                document.getElementById('d-val').innerText = valCifra;
-                showS('scr-5');
+        function checkQ() {
+            let ans = document.getElementById('q-ans').value.toLowerCase().trim();
+            if(db[st.c][st.sIdx].qs[st.qI].a.includes(ans)) {
+                st.qI++;
+                if(st.qI < 3) {
+                    loadQ();
+                } else {
+                    setupD();
+                }
             } else {
-                alert("Identifică toate elementele de pe diagramă!");
+                // Resetăm sunetul la început și îl pornim
+                const errorAudio = document.getElementById('err-sound');
+                errorAudio.currentTime = 0; 
+                errorAudio.play();
+                
+                // EFECT VIZUAL EROARE (ROȘU) - opțional, dacă vrei să pulseze și aici
+                document.body.style.background = "#ff4444";
+                setTimeout(() => { document.body.style.background = "var(--dark)"; }, 200);
+
+                alert("Răspuns incorect! Încearcă din nou.");
             }
         }
 
