@@ -2,6 +2,7 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BIO-ESCAPE: ACADEMY EDITION</title>
     <style>
         :root { --neon: #00ff88; --cyber: #00d4ff; --dark: #050a14; --glass: rgba(15, 23, 42, 0.98); }
@@ -22,6 +23,40 @@
         #timer-ui { position: absolute; top: 20px; left: 30px; color: var(--cyber); font-family: monospace; font-size: 1.4em; }
         .progress-bar { width: 100%; height: 5px; background: #222; margin-top: 10px; border-radius: 5px; }
         #progress-fill { height: 100%; background: var(--neon); width: 0%; transition: 0.3s; }
+        /* --- MODIFICĂRI PENTRU MOBIL --- */
+    @media (max-width: 600px) {
+        #ui-container {
+            width: 98%;
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        .bio-display {
+            height: 180px; /* Imaginea devine puțin mai mică pe verticală */
+        }
+
+        button {
+            width: 100%;       /* Butoanele ocupă toată lățimea pe telefon */
+            margin: 8px 0;    /* Spațiu între ele să nu fie lipite */
+            padding: 16px;    /* Mai înalte pentru a fi ușor de apăsat cu degetul */
+            font-size: 1rem;
+        }
+
+        input {
+            width: 100%;
+            font-size: 1.2rem; /* Previne zoom-ul automat la tastare pe iPhone */
+        }
+
+        #drop-map {
+            height: 280px;    /* Ajustăm harta de drag-and-drop pentru ecrane mici */
+        }
+        
+        .drop-box {
+            width: 90px;      /* Căsuțele de drop devin puțin mai mici */
+            height: 28px;
+            font-size: 0.65em;
+        }
+    }
     </style>
 </head>
 <body>
@@ -291,3 +326,4 @@
     </script>
 </body>
 </html>
+
